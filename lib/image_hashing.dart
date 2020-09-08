@@ -16,8 +16,12 @@ class ImageHashing {
   /// `imagemagick` in macOS is come from homebrew
   Future<void> config() async {
     if (UniversalPlatform.isMacOS) {
-      // install imagemagick
-      await run('brew', ['install', 'imagemagick'], verbose: true);
+      // install imagemagick if not available
+      var info =
+          (await run('brew', ['info', 'imagemagick'], verbose: true)).stdout;
+      if (info.contains('No available') || info.contains('Not installed')) {
+        await run('brew', ['install', 'imagemagick'], verbose: true);
+      }
 
       // copy binary files into executeable dir
       final binaries = [
