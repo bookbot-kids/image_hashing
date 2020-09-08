@@ -11,7 +11,7 @@ var inputPath = process.argv[2];
 var ext = path.extname(inputPath);
 data = new Uint8Array(fs.readFileSync(inputPath));
 if(ext == ".jpg") {
-	var imgData = jpeg.decode(data);
+	var imgData = jpeg.decode(data, {maxMemoryUsageInMB: 1024, maxResolutionInMP: 500});
 	hash = blockhash.blockhashData(imgData, 16, 2);
 	console.log(hash);
 } else if(ext == ".png") {
