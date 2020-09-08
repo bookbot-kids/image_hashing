@@ -6,6 +6,7 @@ var PNG = require('png-js');
 var jpeg = require('jpeg-js');
 var fs = require('fs');
 var path = require('path');
+var tiff = require('decode-tiff');
 
 var inputPath = process.argv[2];
 var ext = path.extname(inputPath);
@@ -27,6 +28,10 @@ if(ext == ".jpg") {
 	    hash = blockhash.blockhashData(imgData, 16, 2);
 		console.log(hash);
 	});
+} else if(ext == ".tiff") {
+	var imgData = tiff.decode(data);
+	hash = blockhash.blockhashData(imgData, 16, 2);
+	console.log(hash);
 }
 
 

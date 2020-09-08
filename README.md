@@ -6,5 +6,5 @@
 - In `blockhash-js/package.json`, add `"bin": "bin.js",`
 - Make sure to copy `bin.js` file into `blockhash-js`
 - `cd` to the `blockhash-js` folder
-- Run `node install` to install dependencies
+- Run `npm install` to install dependencies
 - Run `pkg .` to generate binaries for mac, linux, windows

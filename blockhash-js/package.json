@@ -38,6 +38,7 @@
   "license": "MIT",
   "bin": "bin.js",
   "dependencies": {
+    "decode-tiff": "^0.2.1",
     "jpeg-js": "^0.4.2",
     "png-js": "^1.0.0"
   }
