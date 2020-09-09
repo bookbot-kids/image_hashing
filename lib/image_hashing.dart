@@ -26,6 +26,7 @@ class ImageHashing {
       // copy binary files into executeable dir
       final binaries = [
         'blockhash-macos',
+        'blockhash',
       ];
       for (var binary in binaries) {
         await FileUtil.copyFile(
@@ -58,22 +59,20 @@ class ImageHashing {
             : p.join(await _processDir, 'magick.exe');
         var tempFile = p.join(await _processDir, '$_newFileName.jpg');
         await run(magicKExeFile, ['convert', file, tempFile], verbose: true);
-        var exeFile = p.join(
-            await _processDir,
-            UniversalPlatform.isMacOS
-                ? 'blockhash-macos'
-                : 'blockhash-win.exe');
+        var exeFile = p.join(await _processDir,
+            UniversalPlatform.isMacOS ? 'blockhash' : 'blockhash-win.exe');
         var result = (await run(exeFile, [tempFile], verbose: true)).stdout;
         // then delete this temp jpg
         await FileUtil.delete(tempFile);
+        result = result.split(' ').first;
+        print('[$file] has result $result');
         return result;
       } else {
-        var exeFile = p.join(
-            await _processDir,
-            UniversalPlatform.isMacOS
-                ? 'blockhash-macos'
-                : 'blockhash-win.exe');
+        var exeFile = p.join(await _processDir,
+            UniversalPlatform.isMacOS ? 'blockhash' : 'blockhash-win.exe');
         var result = (await run(exeFile, [file], verbose: true)).stdout;
+        result = result.split(' ').first;
+        print('[$file] has result $result');
         return result;
       }
     } else {
