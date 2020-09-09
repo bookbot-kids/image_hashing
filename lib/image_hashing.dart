@@ -25,7 +25,6 @@ class ImageHashing {
 
       // copy binary files into executeable dir
       final binaries = [
-        'blockhash-macos',
         'blockhash',
       ];
       for (var binary in binaries) {
@@ -37,7 +36,7 @@ class ImageHashing {
 
       // copy binary files into executeable dir
       final binaries = [
-        'blockhash-win.exe',
+        'blockhash.exe',
         'magick.exe',
       ];
       for (var binary in binaries) {
@@ -50,33 +49,26 @@ class ImageHashing {
   /// Process the image and return a unique hash not null
   Future<dynamic> process(String file) async {
     var fileExtension = p.extension(file).toLowerCase();
-    if (['.png', '.jpg', '.svg', '.tiff']
-        .contains(fileExtension.toLowerCase())) {
-      if (fileExtension.toLowerCase() == '.svg') {
-        // convert svg into jpg by imagemagick
-        var magicKExeFile = UniversalPlatform.isMacOS
-            ? 'magick' // from homebrew
-            : p.join(await _processDir, 'magick.exe');
-        var tempFile = p.join(await _processDir, '$_newFileName.jpg');
-        await run(magicKExeFile, ['convert', file, tempFile], verbose: true);
-        var exeFile = p.join(await _processDir,
-            UniversalPlatform.isMacOS ? 'blockhash' : 'blockhash-win.exe');
-        var result = (await run(exeFile, [tempFile], verbose: true)).stdout;
-        // then delete this temp jpg
-        await FileUtil.delete(tempFile);
-        result = result.split(' ').first;
-        print('[$file] has result $result');
-        return result;
-      } else {
-        var exeFile = p.join(await _processDir,
-            UniversalPlatform.isMacOS ? 'blockhash' : 'blockhash-win.exe');
-        var result = (await run(exeFile, [file], verbose: true)).stdout;
-        result = result.split(' ').first;
-        print('[$file] has result $result');
-        return result;
-      }
+    var exeFile = p.join(await _processDir,
+        UniversalPlatform.isMacOS ? 'blockhash' : 'blockhash.exe');
+    if (fileExtension.toLowerCase() == '.svg') {
+      // convert svg into jpg by imagemagick
+      var magicKExeFile = UniversalPlatform.isMacOS
+          ? 'magick' // from homebrew
+          : p.join(await _processDir, 'magick.exe');
+      var tempFile = p.join(await _processDir, '$_newFileName.jpg');
+      await run(magicKExeFile, ['convert', file, tempFile], verbose: true);
+      var result = (await run(exeFile, [tempFile], verbose: true)).stdout;
+      // then delete this temp jpg
+      await FileUtil.delete(tempFile);
+      result = result.split(' ').first;
+      print('[$file] has result $result');
+      return result;
     } else {
-      throw UnsupportedError('file type $fileExtension is not supported');
+      var result = (await run(exeFile, [file], verbose: true)).stdout;
+      result = result.split(' ').first;
+      print('[$file] has result $result');
+      return result;
     }
   }
 
