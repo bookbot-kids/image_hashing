@@ -12,9 +12,12 @@ class ImageHashing {
 
   static ImageHashing shared = ImageHashing._privateConstructore();
 
+  String workingDir;
+
   /// Setup the executable files before running, copy all files into an execute directory
   /// `imagemagick` in macOS is come from homebrew
-  Future<void> config() async {
+  Future<void> init(String dir) async {
+    workingDir = dir;
     if (UniversalPlatform.isMacOS) {
       // install imagemagick if not available
       var info =
@@ -28,8 +31,8 @@ class ImageHashing {
         'blockhash',
       ];
       for (var binary in binaries) {
-        await FileUtil.copyFile(
-            'binaries/$binary', p.join(await _processDir, binary));
+        await FileUtil.copyAssetFile('packages/image_hashing/binaries/$binary',
+            p.join(await _processDir, binary));
       }
     } else if (UniversalPlatform.isWindows) {
       // copy execute into current dir
@@ -40,8 +43,8 @@ class ImageHashing {
         'magick.exe',
       ];
       for (var binary in binaries) {
-        await FileUtil.copyFile(
-            'binaries/$binary', p.join(await _processDir, binary));
+        await FileUtil.copyAssetFile('packages/image_hashing/binaries/$binary',
+            p.join(await _processDir, binary));
       }
     }
   }
@@ -80,7 +83,8 @@ class ImageHashing {
 
   /// Get working directory
   static Future<String> get _processDir async {
-    final dir = Directory('image_hashing');
+    final dir =
+        Directory(p.join(ImageHashing.shared.workingDir, 'image_hashing'));
     if (!(await dir.exists())) {
       await dir.create(recursive: true);
     }

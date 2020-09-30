@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:universal_io/io.dart';
 
 class FileUtil {
@@ -16,5 +17,17 @@ class FileUtil {
     if (await File(path).exists()) {
       await File(path).delete();
     }
+  }
+
+  /// Copy file from asset, ignore if exist
+  static Future<void> copyAssetFile(String asssetPath, String to) async {
+    var destFile = File(to);
+    if (await destFile.exists()) {
+      return;
+    }
+
+    final data = await rootBundle.load(asssetPath);
+    var bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    await destFile.writeAsBytes(bytes);
   }
 }

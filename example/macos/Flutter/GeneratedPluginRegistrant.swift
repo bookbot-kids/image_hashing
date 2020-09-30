@@ -5,10 +5,10 @@
 import FlutterMacOS
 import Foundation
 
-import path_provider_macos
 import image_hashing
+import path_provider_macos
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
   ImageHashingPlugin.register(with: registry.registrar(forPlugin: "ImageHashingPlugin"))
+  PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
 }
