@@ -31,8 +31,10 @@ class ImageHashing {
         'blockhash',
       ];
       for (var binary in binaries) {
-        await FileUtil.copyAssetFile('packages/image_hashing/binaries/$binary',
-            p.join(await _processDir, binary));
+        var dest = p.join(await _processDir, binary);
+        await FileUtil.copyAssetFile(
+            'packages/image_hashing/binaries/$binary', dest);
+        await run('chmod', ['+x', dest]);
       }
     } else if (UniversalPlatform.isWindows) {
       // copy execute into current dir
