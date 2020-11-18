@@ -16,14 +16,17 @@ class ImageHashing {
 
   /// Setup the executable files before running, copy all files into an execute directory
   /// `imagemagick` in macOS is come from homebrew
-  Future<void> init(String dir) async {
+  Future<void> init(String dir,
+      {bool runBrew = true, bool runChmod = true}) async {
     workingDir = dir;
     if (UniversalPlatform.isMacOS) {
-      // install imagemagick if not available
-      var info =
-          (await run('brew', ['info', 'imagemagick'], verbose: true)).stdout;
-      if (info.contains('No available') || info.contains('Not installed')) {
-        await run('brew', ['install', 'imagemagick'], verbose: true);
+      if (runBrew) {
+        // install imagemagick if not available
+        var info =
+            (await run('brew', ['info', 'imagemagick'], verbose: true)).stdout;
+        if (info.contains('No available') || info.contains('Not installed')) {
+          await run('brew', ['install', 'imagemagick'], verbose: true);
+        }
       }
 
       // copy binary files into executeable dir
@@ -34,7 +37,9 @@ class ImageHashing {
         var dest = p.join(await _processDir, binary);
         await FileUtil.copyAssetFile(
             'packages/image_hashing/binaries/$binary', dest);
-        await run('chmod', ['+x', dest]);
+        if (runChmod) {
+          await run('chmod', ['+x', dest]);
+        }
       }
     } else if (UniversalPlatform.isWindows) {
       // copy execute into current dir
