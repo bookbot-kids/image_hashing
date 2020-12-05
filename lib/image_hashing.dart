@@ -16,22 +16,13 @@ class ImageHashing {
 
   /// Setup the executable files before running, copy all files into an execute directory
   /// `imagemagick` in macOS is come from homebrew
-  Future<void> init(String dir,
-      {bool runBrew = true, bool runChmod = true}) async {
+  Future<void> init(String dir, {bool runChmod = true}) async {
     workingDir = dir;
     if (UniversalPlatform.isMacOS) {
-      if (runBrew) {
-        // install imagemagick if not available
-        var info =
-            (await run('brew', ['info', 'imagemagick'], verbose: true)).stdout;
-        if (info.contains('No available') || info.contains('Not installed')) {
-          await run('brew', ['install', 'imagemagick'], verbose: true);
-        }
-      }
-
       // copy binary files into executeable dir
       final binaries = [
         'blockhash',
+        'magick',
       ];
       for (var binary in binaries) {
         var dest = p.join(await _processDir, binary);
@@ -64,7 +55,7 @@ class ImageHashing {
     if (fileExtension.toLowerCase() == '.svg') {
       // convert svg into jpg by imagemagick
       var magicKExeFile = UniversalPlatform.isMacOS
-          ? 'magick' // from homebrew
+          ? p.join(await _processDir, 'magick')
           : p.join(await _processDir, 'magick.exe');
       var tempFile = p.join(await _processDir, '$_newFileName.jpg');
       await run(magicKExeFile, ['convert', file, tempFile], verbose: true);
