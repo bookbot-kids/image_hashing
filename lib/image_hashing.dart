@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:image_hashing/file_util.dart';
+import 'package:logger/logger.dart';
 import 'package:process_run/process_run.dart';
 import 'package:universal_io/io.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -13,10 +14,11 @@ class ImageHashing {
   static ImageHashing shared = ImageHashing._privateConstructore();
 
   String workingDir;
+  Logger logger;
 
   /// Setup the executable files before running, copy all files into an execute directory
   /// `imagemagick` in macOS is come from homebrew
-  Future<void> init(String dir, {bool runChmod = true}) async {
+  Future<void> init(String dir, Logger logger, {bool runChmod = true}) async {
     workingDir = dir;
     if (UniversalPlatform.isMacOS) {
       // copy binary files into executeable dir
@@ -29,7 +31,11 @@ class ImageHashing {
         await FileUtil.copyAssetFile(
             'packages/image_hashing/binaries/$binary', dest);
         if (runChmod) {
-          await run('chmod', ['+x', dest]);
+          try {
+            await run('chmod', ['+x', dest]);
+          } catch (e, stacktrace) {
+            logger?.w('chmod error $e', e, stacktrace);
+          }
         }
       }
     } else if (UniversalPlatform.isWindows) {
@@ -63,12 +69,12 @@ class ImageHashing {
       // then delete this temp jpg
       await FileUtil.delete(tempFile);
       result = result.split(' ').first;
-      print('[$file] has result $result');
+      logger?.i('[$file] has result $result');
       return result;
     } else {
       var result = (await run(exeFile, [file], verbose: true)).stdout;
       result = result.split(' ').first;
-      print('[$file] has result $result');
+      logger?.i('[$file] has result $result');
       return result;
     }
   }

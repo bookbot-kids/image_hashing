@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_hashing/image_hashing.dart';
+import 'package:logger/logger.dart';
 import 'package:universal_io/io.dart';
 import 'package:path/path.dart' as p;
 
@@ -13,7 +14,7 @@ void main() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       return '.';
     });
-    await ImageHashing.shared.init('');
+    await ImageHashing.shared.init('', Logger());
   });
 
   tearDown(() {});
