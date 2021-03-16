@@ -32,7 +32,7 @@ class ImageHashing {
             'packages/image_hashing/binaries/$binary', dest);
         if (runChmod) {
           try {
-            await run('chmod', ['+x', dest]);
+            await runExecutableArguments('chmod', ['+x', dest]);
           } catch (e, stacktrace) {
             logger?.w('chmod error $e', e, stacktrace);
           }
@@ -64,15 +64,19 @@ class ImageHashing {
           ? p.join(await _processDir, 'magick')
           : p.join(await _processDir, 'magick.exe');
       var tempFile = p.join(await _processDir, '$_newFileName.jpg');
-      await run(magicKExeFile, ['convert', file, tempFile], verbose: true);
-      var result = (await run(exeFile, [tempFile], verbose: true)).stdout;
+      await runExecutableArguments(magicKExeFile, ['convert', file, tempFile],
+          verbose: true);
+      var result =
+          (await runExecutableArguments(exeFile, [tempFile], verbose: true))
+              .stdout;
       // then delete this temp jpg
       await FileUtil.delete(tempFile);
       result = result.split(' ').first;
       logger?.i('[$file] has result $result');
       return result;
     } else {
-      var result = (await run(exeFile, [file], verbose: true)).stdout;
+      var result =
+          (await runExecutableArguments(exeFile, [file], verbose: true)).stdout;
       result = result.split(' ').first;
       logger?.i('[$file] has result $result');
       return result;
